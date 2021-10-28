@@ -33,7 +33,8 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 // $routes->get('/', 'Home::index'); //default
 $routes->get('/', 'Pages::index');
-$routes->get('/buku/(:segment)', 'Buku::detail/$1');
+$routes->get('/buku/create', 'Buku::create');
+$routes->get('/buku/(:any)', 'Buku::detail/$1');
 
 /*
  * --------------------------------------------------------------------
