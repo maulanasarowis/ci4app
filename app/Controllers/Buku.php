@@ -40,7 +40,8 @@ class Buku extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Form Tambah Data Buku'
+            'title' => 'Form Tambah Data Buku',
+            'validation' => \Config\Services::validation()
         ];
 
         return view('buku/create', $data);
@@ -48,6 +49,19 @@ class Buku extends BaseController
 
     public function save() 
     {
+        if (!$this->validate([
+            'judul' => [
+                'rules' => 'required|is_unique[buku.judul]',
+                'errors' => [
+                    'required' => '{field} buku harus diisi',
+                    'is_unique' => '{field} buku sudah terdaftar'
+                ]
+            ]
+        ])) {
+            $validation = \Config\Services::validation();
+            return redirect()->to('/buku/create')->withInput()->with('validation', $validation);
+        }
+
         $slug = url_title($this->request->getVar('judul'), '-', true);
         $this->bukuModel->save([
             'judul' => $this->request->getVar('judul'),
