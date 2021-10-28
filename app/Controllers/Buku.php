@@ -11,6 +11,7 @@ class Buku extends BaseController
     {
         $this->bukuModel = new BukuModel();
     }
+    
     public function index()
     {
         // $buku = $this->bukuModel->findAll();
@@ -72,6 +73,13 @@ class Buku extends BaseController
         ]);
 
         session()->setFlashData('pesan', 'Data berhasil di tambahkan!');
+        return redirect()->to('/buku');
+    }
+
+    public function delete($id)
+    {
+        $this->bukuModel->delete($id);
+        session()->setFlashData('pesan', 'Data berhasil dihapus.');
         return redirect()->to('/buku');
     }
 }
