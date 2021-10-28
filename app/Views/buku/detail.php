@@ -15,7 +15,7 @@
                             <h5 class="card-title"><?= $buku['judul']; ?></h5>
                             <p class="card-text"><b>Penulis :</b> <?= $buku['penulis']; ?></p>
                             <p class="card-text"><small class="text-muted"><b>Penerbit :</b> <?= $buku['penerbit']; ?></small></p>
-                            <a href="" class="btn btn-warning">Edit</a>
+                            <a href="/buku/edit/<?= $buku['slug']; ?>" class="btn btn-warning">Edit</a>
                             <form action="/buku/<?= $buku['id']; ?>" method="POST" class="d-inline">
                                 <?= csrf_field(); ?>
                                 <input type="hidden" name="_method" value="DELETE">
