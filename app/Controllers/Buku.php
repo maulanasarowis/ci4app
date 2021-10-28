@@ -57,10 +57,31 @@ class Buku extends BaseController
                     'required' => '{field} buku harus diisi',
                     'is_unique' => '{field} buku sudah terdaftar'
                 ]
-            ]
+                ],
+                'sampul' => [
+                    'rules' => 'max_size[sampul,1024]|is_image[sampul]|mime_in[sampul,image/jpg,image/jpeg,image/png]',
+                    'errors' => [
+                        // 'uploaded' => 'gambar harus dipilih',
+                        'max_size' => 'ukuran gambar terlalu besar',
+                        'is_image' => 'yang anda pilih bukan gambar',
+                        'mime_in' => 'yang anda pilih bukan gambar',
+                    ]
+                ]
         ])) {
-            $validation = \Config\Services::validation();
-            return redirect()->to('/buku/create')->withInput()->with('validation', $validation);
+            // $validation = \Config\Services::validation();
+            // return redirect()->to('/buku/create')->withInput()->with('validation', $validation);
+            return redirect()->to('/buku/create')->withInput();
+        }
+        $fileSampul = $this->request->getFile('sampul');
+        // apakah tidak ada file yang diupload
+        if ($fileSampul->getError() == 4) {
+            $namaSampul = 'default.png';
+        } else {
+            // $namaSampul = $fileSampul->getName();
+            // generate nama sampul(gambar) random
+            $namaSampul = $fileSampul->getRandomName();
+            // pindahkan file folder img
+            $fileSampul->move('img', $namaSampul);
         }
 
         $slug = url_title($this->request->getVar('judul'), '-', true);
@@ -69,7 +90,7 @@ class Buku extends BaseController
             'slug' => $slug,
             'penulis' => $this->request->getVar('penulis'),
             'penerbit' => $this->request->getVar('penerbit'),
-            'sampul' => $this->request->getVar('sampul')
+            'sampul' =>$namaSampul
         ]);
 
         session()->setFlashData('pesan', 'Data berhasil di tambahkan!');
@@ -78,6 +99,13 @@ class Buku extends BaseController
 
     public function delete($id)
     {
+        // cari gambar berdasarkan id
+        $buku = $this->bukuModel->find($id);
+        // cek jika file gambarnya default.png
+        if ($buku['sampul'] != 'default.png') {
+            // hapus gambar
+            unlink('img/' . $buku['sampul']);
+        }
         $this->bukuModel->delete($id);
         session()->setFlashData('pesan', 'Data berhasil dihapus.');
         return redirect()->to('/buku');
